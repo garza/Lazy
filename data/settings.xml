@@ -1,0 +1,11 @@
+<?xml version="1.1" ?>
+<settings>
+    <global>
+        <autotarget>true</autotarget>
+        <spell>Glutinous Dart</spell>
+        <spell_active>false</spell_active>
+        <target>Locus Colibri</target>
+        <weaponskill>Savage Blade</weaponskill>
+        <weaponskill_active>false</weaponskill_active>
+    </global>
+</settings>
