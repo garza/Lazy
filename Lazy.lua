@@ -21,6 +21,10 @@ local jiggle = false
 local jiggle_interval = 60
 local jiggle_timer = 0
 
+local timer_end_timestamp = nil
+local timer_start_timestamp = nil
+local engine_active = true
+
 buffactive = {}
 
 defaults = {}
@@ -106,6 +110,18 @@ windower.register_event('addon command', function (...)
 			jiggle = false
 			log("Jiggle disabled")
 		end
+	elseif args[1] == "timer" then
+		local n = tonumber(args[2])
+		if n and n > 0 then
+			timer_start_timestamp = os.time()
+			timer_end_timestamp = timer_start_timestamp + (n * 60)
+			engine_active = true
+			log("Timer set: Lazy will stop in " .. n .. " minute(s).")
+		else
+			timer_end_timestamp = nil
+			timer_start_timestamp = nil
+			log("Timer cancelled.")
+		end
 	elseif args[1] == "jiggle_interval" then
 		local n = tonumber(args[2])
 		if n then
@@ -166,6 +182,17 @@ local function do_jiggle()
 end
 
 function Engine()
+	if timer_end_timestamp then
+		local now = os.time()
+		if now >= timer_end_timestamp then
+			timer_end_timestamp = nil
+			timer_start_timestamp = nil
+			engine_active = false
+			log("Timer expired. Lazy stopped.")
+			return
+		end
+	end
+
 	Buffs = windower.ffxi.get_player()["buffs"]
     table.reassign(buffactive,convert_buff_list(Buffs))
 
@@ -196,7 +223,9 @@ function Engine()
             jiggle_timer = jiggle_timer - 1
         end
     end
-    coroutine.schedule(Engine, math.random(1, 2))
+    if engine_active then
+        coroutine.schedule(Engine, math.random(1, 2))
+    end
 end
 
 function pull()
