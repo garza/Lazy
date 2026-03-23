@@ -110,6 +110,15 @@ windower.register_event('addon command', function (...)
 			jiggle = false
 			log("Jiggle disabled")
 		end
+	elseif args[1] == "stop" then
+		engine_active = false
+		log("Lazy stopped.")
+	elseif args[1] == "start" then
+		if not engine_active then
+			engine_active = true
+			Engine()
+			log("Lazy started.")
+		end
 	elseif args[1] == "timer" then
 		local n = tonumber(args[2])
 		if n and n > 0 then
